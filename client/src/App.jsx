@@ -21,7 +21,10 @@ function App() {
 				<NavLink to={`/signin`}>Sign In</NavLink>
 			</li>
 			<li>
-				<NavLink to={`signup/`}>Sign up</NavLink>
+				<NavLink to={`/signup`}>Sign up</NavLink>
+			</li>
+			<li>
+				<NavLink to={`/users`}>Users</NavLink>
 			</li>
 		</>
 	);
