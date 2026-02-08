@@ -1,14 +1,13 @@
-import React, { use, useState } from 'react';
-import { data, useLoaderData } from 'react-router-dom';
+import React, {use, useState} from "react";
+import {data, useLoaderData} from "react-router-dom";
 import Swal from "sweetalert2";
 
 const Users = () => {
+	const loadedUsers = useLoaderData();
+	const [users, setUsers] = useState(loadedUsers);
 
-    const loadedUsers = useLoaderData();
-    const [users, setUsers] = useState(loadedUsers);
-
-    const handleUserDelete = id => {
-        Swal.fire({
+	const handleUserDelete = (id) => {
+		Swal.fire({
 			title: "Are you sure?",
 			text: "You won't be able to revert this!",
 			icon: "warning",
@@ -18,24 +17,28 @@ const Users = () => {
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				// Swal.fire({
-				// 	title: "Deleted!",
-				// 	text: "Your file has been deleted.",
-				// 	icon: "success",
-				// });
+				fetch(`http://localhost:5000/users/${id}`, {
+					method: "DELETE",
+				})
+					.then((res) => res.json())
+					.then((data) => {
+						console.log("Delete is done", data);
+						if (data.deletedCount) {
+							Swal.fire({
+								title: "Deleted!",
+								text: "Your file has been deleted.",
+								icon: "success",
+							});
 
-                fetch(`http://localhost:5000/users/${id}`, {
-                    method: "DELETE"
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log("Delete is done", data);
-                    })
+                            const remainingUsers = users.filter(user => user._id !== id);
+                            setUsers(remainingUsers); 
+						}
+					});
 			}
 		});
-    }
+	};
 
-    return (
+	return (
 		<div>
 			<h2 className="text-3xl">Users: {users.length}</h2>
 			<div className="overflow-x-auto">
@@ -58,10 +61,12 @@ const Users = () => {
 								<td>{user.name}</td>
 								<td>{user.email}</td>
 								<td>{user.createdAt}</td>
-                                <td>
-                                    <button onClick={() => handleUserDelete(user._id)} className='btn'>X</button>
-                                    <button className='btn'>E</button>
-                                </td>
+								<td>
+									<button onClick={() => handleUserDelete(user._id)} className="btn">
+										X
+									</button>
+									<button className="btn">E</button>
+								</td>
 							</tr>
 						))}
 					</tbody>
